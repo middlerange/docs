@@ -1,0 +1,427 @@
+---
+title: 'Framework Guides'
+description: 'Getting started with HTML, React, Vue and React Native'
+---
+
+You can get started by creating a free account at [userorbit.com](https://userorbit.com).
+
+Check out all the different integration options available:
+
+<CardGroup cols={2}>
+  <Card
+    title="HTML"
+    icon="code"
+    href="#html"
+  >
+    All you need to do is add 3 lines of code to your HTML script and thats it, you're done!
+  </Card>
+  <Card
+    title="React"
+    icon="react"
+    href="#reactjs"
+  >
+    Get started with React
+  </Card>
+  <Card
+    title="Next.js"
+    icon="react"
+    href="#nextjs"
+  >
+    Get started with Next.js
+  </Card>
+  <Card
+    title="Vue"
+    icon="vuejs"
+    href="#vuejs"
+  >
+    Get started with Vue
+  </Card>
+  <Card
+    title="React Native"
+    icon="react"
+    href="#react-native"
+  >
+    Get started with React Native
+  </Card>
+</CardGroup>
+
+
+
+---
+
+## Prerequisites
+
+Before getting started, make sure you have:
+
+1. A web application (behind your user authentication system) in your desired framework is set up and running.
+2. A Userorbit account with access to your environment ID and API host. You can find these in the **Setup Checklist** in the Settings.
+
+---
+
+## HTML
+
+All you need to do is copy a `<script>` tag to your HTML head, and that’s about it!
+
+
+```html
+<!-- START Userorbit SDK -->
+<script type="text/javascript">
+!function(){
+    var apiHost = "https://api.userorbit.com";
+    var accountId = "<your-account-id>";
+    var userId = "<your-user-id>"; //optional
+    var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src=apiHost+"/userorbit.umd.cjs";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e),setTimeout(function(){window.userorbit.init({accountId: accountId, apiHost: apiHost, userId: userId})},500)}();
+</script>
+<!-- END Userorbit SDK -->
+```
+
+### Required customizations to be made
+
+You can find the Userorbit you accountId at the [Userorbit Account](https://app.userorbit.com/settings/widget).
+
+---
+
+## ReactJS
+
+Install the Userorbit SDK using one of the package managers ie `npm`,`pnpm`,`yarn`. Note that zod is required as a peer dependency must also be installed in your project.
+
+
+<CodeGroup>
+
+```shell npm
+  npm install userorbit-js
+```
+
+```shell yarn
+  yarn add userorbit-js
+```
+
+
+```shell pnpm
+  pnpm add userorbit-js
+```
+
+</CodeGroup>
+
+
+Now, update your App.js/ts file to initialise Userorbit.
+
+<CodeGroup title="src/App.js">
+
+```js
+// userobit js sdk imports
+import userorbit from "userorbit-js";
+
+if (typeof window !== "undefined") {
+  userorbit.init({
+    accountId: "<account-id>",
+    apiHost: "https://api.userorbit.com", // change if self hosted
+    userId: "<user-id>", //optional
+  });
+}
+
+function App() {
+  // your own app
+}
+
+export default App;
+```
+
+</CodeGroup>
+
+
+
+<Note>
+  You can find the Userorbit you accountId at the [Userorbit Account](https://app.userorbit.com/settings/widget).
+</Note>
+
+
+### Required customizations to be made
+
+
+---
+
+## NextJS
+
+NextJs projects typically follow two main conventions: the App Directory and the Pages Directory.
+To ensure smooth integration with the Userorbit SDK, which operates solely on the client side, follow the
+guidelines for each convention below:
+
+- App directory: You will have to define a new component in `app/userorbit.tsx` file and call it in your `app/layout.tsx` file.
+- Pages directory: You will have to visit your `_app.tsx` and just initialise Userorbit there.
+
+Code snippets for the integration for both conventions are provided to further assist you.
+
+<CodeGroup>
+
+```shell npm
+  npm install userorbit-js
+```
+
+```shell yarn
+  yarn add userorbit-js
+```
+
+
+```shell pnpm
+  pnpm add userorbit-js
+```
+
+</CodeGroup>
+
+### App Directory
+
+
+
+```tsx app/userorbit.tsx
+"use client";
+
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import userorbit from "userorbit-js";
+
+export default function UserorbitProvider() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    userorbit.init({
+      accountId: "<account-id>",
+      apiHost: "https://api.userorbit.com", // change only if self hosted
+      userId: "<user-id>", //optional
+    });
+  }, []);
+
+  useEffect(() => {
+    userorbit?.registerRouteChange();
+  }, [pathname, searchParams]);
+
+  return null;
+}
+```
+
+
+
+```tsx app/layout.tsx
+import UserorbitProvider from "./userorbit";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <UserorbitProvider />
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+
+### Pages Directory
+
+
+```tsx src/pages/_app.tsx
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import userorbit from "userorbit-js";
+
+if (typeof window !== "undefined") {
+  userorbit.init({
+    accountId: "<account-id>",
+    apiHost: "https://api.userorbit.com", // change only if self hosted
+    userId: "<user-id>", //optional
+  });
+}
+
+export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Connect next.js router to Userorbit
+    const handleRouteChange = userorbit?.registerRouteChange;
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, []);
+  return <Component {...pageProps} />;
+}
+```
+
+
+### Required customizations to be made
+
+<Note>
+- You can find the Userorbit you accountId at the [Userorbit Account](https://app.userorbit.com/settings/widget).
+- First we initialize the Userorbit SDK, ensuring that it only runs on the client side.
+- To connect the Next.js router to Userorbit and ensure the SDK can keep track of every page change, we are registering the route change event.
+</Note>
+
+
+
+---
+
+## VueJs
+
+Integrating the Userorbit SDK with Vue.js is a straightforward process.
+We will make sure the SDK is only loaded and used on the client side, as it's not intended for server-side usage.
+
+
+<CodeGroup>
+
+```shell npm
+  npm install userorbit-js
+```
+
+```shell yarn
+  yarn add userorbit-js
+```
+
+
+```shell pnpm
+  pnpm add userorbit-js
+```
+
+</CodeGroup>
+
+
+
+```js src/userorbit.js
+import userorbit from "userorbit-js";
+
+if (typeof window !== "undefined") {
+  userorbit.init({
+    accountId: "<account-id>",
+    apiHost: "https://api.userorbit.com", // change only if self hosted
+    userId: "<user-id>", //optional
+  });
+}
+
+export default userorbit;
+```
+
+
+
+
+```js src/main.js
+
+import userorbit from "@/userorbit";
+
+const app = createApp(App);
+
+app.use(router);
+
+app.mount("#app");
+
+router.afterEach((to, from) => {
+  if (typeof userorbit !== "undefined") {
+    userorbit.registerRouteChange();
+  }
+});
+```
+
+
+
+### Required customizations to be made
+
+<Note>
+  You can find the Userorbit you accountId at the [Userorbit Account](https://app.userorbit.com/settings/widget).
+</Note>
+
+
+Now visit the [Validate your Setup](#validate-your-setup) section to verify your setup!
+
+## React Native
+
+Install the Userorbit React Native SDK using one of the package managers, i.e., npm, pnpm, or yarn.
+
+
+<CodeGroup>
+```shell npm
+npm install userorbit-react-native
+```
+```shell pnpm
+pnpm add userorbit-react-native
+```
+```shell yarn
+yarn add userorbit-react-native
+```
+</CodeGroup>
+
+
+Now, update your App.js/App.tsx file to initialize Userorbit:
+
+
+```js src/App.js
+
+import Userorbit from "userorbit-react-native";
+
+const config = {
+  accountId: "<account-id>",
+  apiHost: "https://api.userorbit.com", // change only if self hosted
+  userId: "<user-id>",
+};
+
+export default function App() {
+  return (
+    <>
+      {/* Your app content */}
+      <Userorbit initConfig={config} />
+    </>
+  );
+}
+```
+
+
+### Required customizations to be made
+
+<Note>
+  You can find the Userorbit you accountId at the [Userorbit Account](https://app.userorbit.com/settings/widget).
+</Note>
+
+---
+
+
+## Debugging Userorbit Integration
+
+Enabling Userorbit debug mode in your browser is a useful troubleshooting step for identifying and resolving complex issues. This section outlines how to activate debug mode, covers common use cases, and provides insights into specific debug log messages.
+
+### Activate Debug Mode
+
+To activate Userorbit debug mode:
+
+1. **Via URL Parameter:**
+
+   - Enable debug mode mode by adding `?userorbitDebug=true` to your application's URL (e.g. `https://example.com?userorbitDebug=true` or `https://example.com?page=123&userorbitDebug=true`). This parameter will enable debugging for the current page.
+
+2. **View Debug Logs:**
+
+   - Open your browser's developer tools by pressing `F12` or right-clicking and selecting "Inspect."
+   - Navigate to the "Console" tab to view Userorbit debugging information.
+
+     **How to Open Browser Console:**
+
+     - **Google Chrome:** Press `F12` or right-click, select "Inspect," and go to the "Console" tab.
+     - **Firefox:** Press `F12` or right-click, select "Inspect Element," and go to the "Console" tab.
+     - **Safari:** Press `Option + Command + C` to open the developer tools and navigate to the "Console" tab.
+     - **Edge:** Press `F12` or right-click, select "Inspect Element," and go to the "Console" tab.
+
+### Common Use Cases
+
+Debug mode is beneficial for scenarios such as:
+
+- Verifying Userorbit initialization.
+- Identifying tour trigger issues.
+- Troubleshooting unexpected behavior.
+
+### Debug Log Messages
+
+Debug log messages provide insights into:
+
+- API calls and responses.
+- Event tracking, tour triggers and widget interactions.
+- Initialization errors.
+
+
+
+If you ever hit a road block - [Join our Discord](https://discord.gg/bV6gXpmr) and we'd be glad to assist you!

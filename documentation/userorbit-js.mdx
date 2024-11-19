@@ -1,0 +1,182 @@
+---
+title: 'Userorbit JS'
+description: 'Userorbit JS SDK API Reference'
+---
+
+#### Developer Docs
+
+Run Userorbit widget and show announcements, roadmap, feedback and tours inside your Web Apps and Websites
+
+### Overview
+
+The Userorbit JS SDK is a versatile solution for integrating tours into both web apps and websites. It adapts based on the presence of a `userId`. If a `userId` is provided, the SDK handles authenticated tours for logged-in users in web apps. If no `userId` is provided, the SDK can still seamlessly run tours on public-facing websites. The SDK is available on npm [here](https://www.npmjs.com/package/userorbit-js/).
+
+### Install
+
+
+<CodeGroup>
+
+```shell npm
+  npm install userorbit-js
+```
+
+```shell yarn
+  yarn add userorbit-js
+```
+
+
+```shell pnpm
+  pnpm add userorbit-js
+```
+
+</CodeGroup>
+
+## Methods
+
+### Initialize Userorbit
+
+Initialize the Userorbit JS Client - When used in a web app, pass a `userId` to create and target a specific user. When using it on a website without authentication, simply omit the `userId`.
+
+
+
+
+```javascript Initialize Userorbit
+import userorbit from "userorbit-js";
+
+userorbit.init({
+  accountId: "<account-id>", // required
+  apiHost: "<your-api-host>", // required
+  userId: "<user-id>", // optional
+});
+```
+
+
+<Note>
+Userorbit JS is a client SDK meant to be run client-side in their browser so make sure the window object is accessible. Below is an example of how you can set it!
+
+
+```js
+if (window !== undefined) {
+  userorbit.init({
+    accountId: "<account-id>",
+    apiHost: "<your-api-host>",
+    userId: "<user-id>", //optional
+  });
+} else {
+  console.error("Window object not accessible to init Userorbit");
+}
+```
+
+</Note>
+
+### Set Attribute
+
+Set custom attributes for the identified user to help segment them based on specific attribues.
+
+
+
+```js
+userorbit.setAttribute("plan", "paid");
+```
+
+
+### Track Action
+
+Track user actions to trigger tours based on user interactions, such as button clicks or scrolling:
+
+
+```js
+userorbit.track("Clicked on Plans");
+```
+
+
+### Logout
+
+To log out and deinitialize Userorbit, use the userorbit.logout() function. This action clears the current initialization configuration and erases stored frontend information, such as the tours a user has viewed or completed. It's an important step when a user logs out of your application or when you want to reset Userorbit.
+
+
+
+```js
+userorbit.logout();
+```
+
+
+After calling userorbit.logout(), you'll need to reinitialize Userorbit before using any of its features again. Ensure that you properly reinitialize Userorbit to avoid unexpected errors or behavior in your application.
+
+### Reset
+
+Reset the current instance and fetch the latest tours and state again:
+
+
+```js
+userorbit.reset();
+```
+
+
+### Register Route Change:
+
+Listen for page changes and dynamically show tours configured via no-code actions in the Userorbit app:
+
+```js
+userorbit.registerRouteChange();
+```
+
+<Note>
+  {" "}
+  This is only needed when your framework has a custom routing system and you want to trigger tours on route
+  changes. For example: NextJs
+  {" "}
+  Refer to the [Framework Guides](/documentation/framework-guides) for more information.
+</Note>
+
+
+
+## Debug Mode
+
+To enable debug mode in Userorbit, add `?userorbitDebug=true` to your app’s URL.
+
+For example, if you’ve integrated Userorbit JS to your app hosted at `https://example.com`, then change the URL to `https://example.com?userorbitDebug=true` and refresh the page, now view the console logs to see the debug mode live in action.
+
+This activates detailed debug messages in the browser console, providing deeper insights into Userorbit' operation and potential issues.
+
+---
+
+## Troubleshooting
+
+In case you don’t see your tour right away, here's what you can do. Go through these to find the error fast:
+
+### Tour not triggered
+
+If the tour is loaded by the widget it might not have been triggered properly.
+
+**How to fix:**
+
+1. Open your local app in an incognito tab or window. The New Session event is only fired if a user was inactive for 60 minutes or was logged out of Userorbit via userorbit.logout().
+2. Check the debug logs for “Event ‘New Session” tracked”. If you see it in the logs and the tour still did not get displayed, [please let us know.](mailto:support@userorbit.com)
+
+---
+
+### Tour not displayed in HTML page
+
+If the tour is loaded by the widget in the HTML page, try the below steps:
+
+**How to fix:**
+
+1. Make sure you have added the [script](/documentation/framework-guides#html) in the head of the HTML page.
+2. Verify that you have set the \<account-id\> as per your Userorbit instance.
+3. Verify that you have the latest version of the JS Package.
+4. Check the debug logs to see if you still see any errors.
+
+---
+
+### Cannot read undefined of .init()
+
+If you see this error in the console, it means that the Userorbit JS package is not loaded properly.
+
+**How to fix:**
+
+1. Update to the latest version of the JS Package.
+2. Verify this wherever you call initialise the Userorbit instance in your code.
+3. It should now start working.
+
+---
