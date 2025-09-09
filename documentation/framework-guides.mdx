@@ -66,11 +66,18 @@ All you need to do is copy a `<script>` tag to your HTML head, and that’s abou
 ```html
 <!-- START Userorbit SDK -->
 <script type="text/javascript">
-!function(){
-    var apiHost = "https://api.userorbit.com";
-    var accountId = "<your-account-id>";
-    var userId = "<your-user-id>"; //optional
-    var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src=apiHost+"/userorbit.umd.cjs";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e),setTimeout(function(){window.userorbit.init({accountId: accountId, apiHost: apiHost, userId: userId})},500)}();
+
+  !function(){
+      var apiHost = "https://api.userorbit.com"; // change if you have a proxy or self hosted instance
+      var accountId = "<your-account-id>"; // replace with your account id
+      var userId = "<your-user-id>"; //optional
+      var s=document.createElement("script");
+      s.type="text/javascript",s.async=!0,s.src="https://cdn.userorbit.com/userorbit.umd.cjs",
+      s.onload=function(){window.userorbit&&"function"==typeof window.userorbit.init&&window.userorbit.init({accountId:accountId,apiHost:apiHost,userId:userId})};
+      var e=document.getElementsByTagName("script")[0];
+      e.parentNode.insertBefore(s,e)
+  }();
+
 </script>
 <!-- END Userorbit SDK -->
 ```
