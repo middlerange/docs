@@ -1,0 +1,197 @@
+---
+title: "Identify Subscriber"
+api: "POST /v1/public/subscriber.identify"
+description: "Identify or create a subscriber for tracking. Used to initialize the widget and track user activity."
+---
+
+## Authentication
+
+This endpoint requires API key authentication via the `Authorization` header.
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  Subscriber's email address. Used as unique identifier.
+</ParamField>
+
+<ParamField body="name" type="string">
+  Subscriber's display name. If not provided, will be derived from email or existing data.
+</ParamField>
+
+<ParamField body="meta" type="object">
+  Custom metadata for the subscriber
+  <Expandable title="Meta Fields">
+    <ParamField body="meta.mmr" type="number">
+      Monthly Recurring Revenue associated with this subscriber
+    </ParamField>
+    <ParamField body="meta.plan" type="string">
+      Subscription plan (e.g., "pro", "enterprise")
+    </ParamField>
+    <ParamField body="meta.role" type="string">
+      User role in their organization
+    </ParamField>
+    <ParamField body="meta.team" type="string">
+      Team or company name
+    </ParamField>
+    <ParamField body="meta.created_at" type="string">
+      Original account creation date (ISO 8601)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Subscriber object
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">
+      Subscriber ID (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Subscriber's name
+    </ResponseField>
+    <ResponseField name="email" type="string">
+      Subscriber's email
+    </ResponseField>
+    <ResponseField name="source" type="string">
+      Source of subscriber creation (e.g., "widget", "api")
+    </ResponseField>
+    <ResponseField name="meta" type="object">
+      Custom metadata
+    </ResponseField>
+    <ResponseField name="avatarUrl" type="string">
+      URL to subscriber's avatar (if available)
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of creation
+    </ResponseField>
+    <ResponseField name="lastUpdated" type="string">
+      ISO 8601 timestamp of last update
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  JWT token for authenticating subsequent requests as this subscriber
+</ResponseField>
+
+<ResponseField name="isFirstSignin" type="boolean">
+  True if this is a new subscriber, false if existing
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/subscriber.identify' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "email": "john@example.com",
+  "name": "John Doe",
+  "meta": {
+    "plan": "pro",
+    "mrr": 99,
+    "role": "Product Manager",
+    "team": "Acme Corp"
+  }
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/subscriber.identify', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: 'john@example.com',
+    name: 'John Doe',
+    meta: {
+      plan: 'pro',
+      mrr: 99,
+      role: 'Product Manager',
+      team: 'Acme Corp'
+    }
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/subscriber.identify',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'email': 'john@example.com',
+        'name': 'John Doe',
+        'meta': {
+            'plan': 'pro',
+            'mrr': 99,
+            'role': 'Product Manager',
+            'team': 'Acme Corp'
+        }
+    }
+)
+
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "87654321-1234-1234-1234-123456789012",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "source": "api",
+    "meta": {
+      "plan": "pro",
+      "mrr": 99,
+      "role": "Product Manager",
+      "team": "Acme Corp"
+    },
+    "avatarUrl": null,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "lastUpdated": "2024-01-15T10:30:00Z"
+  },
+  "code": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "isFirstSignin": true
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Existing Subscriber**: If email exists, updates metadata and returns existing subscriber
+- **New Subscriber**: Creates new subscriber with provided information
+- **Metadata Merge**: New metadata is merged with existing metadata (doesn't overwrite completely)
+- **Case Insensitive**: Email matching is case-insensitive
+
+## Use Cases
+
+- **Widget Initialization**: Identify user when loading feedback widget
+- **User Tracking**: Track user activity and associate with account
+- **User Segmentation**: Store custom attributes for targeting
+- **Personalization**: Use metadata to customize user experience
+
+## Notes
+
+- The returned `code` (JWT token) should be stored and used for subsequent authenticated requests
+- Metadata fields are flexible - you can add any custom fields
+- Only `mmr`, `plan`, `role`, `team`, and `created_at` are automatically extracted from metadata
+- Email is case-insensitive and will be stored in lowercase

@@ -1,0 +1,237 @@
+---
+title: "Create Topic"
+api: "POST /v1/public/topics.create"
+description: "Create a new topic (feature request) on the roadmap. Supports both authenticated subscribers and anonymous users."
+---
+
+## Authentication
+
+```bash
+# With subscriber authentication
+Authorization: Bearer SUBSCRIBER_JWT_TOKEN
+
+# Or with API key (allows anonymous topics if enabled)
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="title" type="string" required>
+  Topic title
+</ParamField>
+
+<ParamField body="roadmapId" type="string" required>
+  Roadmap ID (UUID)
+</ParamField>
+
+<ParamField body="stageId" type="string" required>
+  Stage ID (UUID) - must be a public stage
+</ParamField>
+
+<ParamField body="description" type="string">
+  Short description. If not provided, defaults to title.
+</ParamField>
+
+<ParamField body="text" type="string">
+  Full topic text/details
+</ParamField>
+
+<ParamField body="meta" type="object">
+  Custom metadata
+  <Expandable title="Meta Fields">
+    <ParamField body="meta.ctaTitle" type="string">Call-to-action title</ParamField>
+    <ParamField body="meta.ctaLink" type="string">Call-to-action URL</ParamField>
+    <ParamField body="meta.ctaImage" type="string">Call-to-action image URL</ParamField>
+    <ParamField body="meta.description" type="string">Meta description</ParamField>
+    <ParamField body="meta.feedback" type="boolean">Mark as feedback type</ParamField>
+    <ParamField body="meta.projectId" type="string">Associated project ID</ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="name" type="string">
+  Creator name (for anonymous topics only)
+</ParamField>
+
+<ParamField body="email" type="string">
+  Creator email (for anonymous topics only)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Created topic object
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL - Authenticated Subscriber
+curl --location --request POST 'https://api.yourapp.com/v1/public/topics.create' \
+--header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "title": "Add dark mode to mobile app",
+  "description": "Need dark mode for iOS and Android apps",
+  "text": "It would be great to have dark mode support across all platforms.",
+  "roadmapId": "roadmap-uuid-123",
+  "stageId": "stage-uuid-456",
+  "meta": {
+    "projectId": "mobile-app",
+    "feedback": true
+  }
+}'
+```
+
+```bash cURL - Anonymous (if enabled)
+curl --location --request POST 'https://api.yourapp.com/v1/public/topics.create' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "title": "Add dark mode to mobile app",
+  "description": "Need dark mode",
+  "roadmapId": "roadmap-uuid-123",
+  "stageId": "stage-uuid-456",
+  "name": "John Doe",
+  "email": "john@example.com"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/topics.create', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${subscriberToken}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: 'Add dark mode to mobile app',
+    description: 'Need dark mode for mobile',
+    text: 'It would be great to have dark mode support.',
+    roadmapId: roadmapId,
+    stageId: stageId,
+    meta: {
+      projectId: 'mobile-app'
+    }
+  })
+});
+
+const { data: topic } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/topics.create',
+    headers={
+        'Authorization': f'Bearer {subscriber_token}',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'title': 'Add dark mode to mobile app',
+        'description': 'Need dark mode for mobile',
+        'text': 'It would be great to have dark mode support.',
+        'roadmapId': roadmap_id,
+        'stageId': stage_id,
+        'meta': {
+            'projectId': 'mobile-app'
+        }
+    }
+)
+
+topic = response.json()['data']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "topic-uuid-new",
+    "urlId": "xyz789",
+    "url": "/add-dark-mode-to-mobile-app-xyz789",
+    "title": "Add dark mode to mobile app",
+    "description": "Need dark mode for iOS and Android apps",
+    "text": "It would be great to have dark mode support across all platforms.",
+    "publishedAt": "2024-01-17T15:00:00Z",
+    "createdAt": "2024-01-17T15:00:00Z",
+    "updatedAt": "2024-01-17T15:00:00Z",
+    "roadmapId": "roadmap-uuid-123",
+    "stageId": "stage-uuid-456",
+    "subscriberId": "sub-uuid-789",
+    "voteCount": 0,
+    "commentCount": 0,
+    "meta": {
+      "projectId": "mobile-app",
+      "feedback": true
+    }
+  }
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+```json Private Stage
+{
+  "error": "cannot publish a topic of private stage"
+}
+```
+
+```json Anonymous Not Allowed
+{
+  "error": "Bad request"
+}
+```
+
+```json Missing Fields
+{
+  "error": "title is required"
+}
+```
+
+## Behavior
+
+- **Authentication**: Requires subscriber token OR API key with anonymous enabled
+- **Anonymous Topics**: If team allows anonymous feedback, creates subscriber automatically
+- **Random Names**: Anonymous users get random names if name not provided
+- **Moderation**: Auto-published unless stage has moderation enabled
+- **Private Stages**: Cannot create topics in private stages
+- **Event Trigger**: Fires `topics.create` event for webhooks
+
+## Anonymous Topic Creation
+
+If `allowAnonymousFeedback` is enabled for the team:
+
+```javascript
+// Anonymous topic with email
+{
+  name: 'John Doe',
+  email: 'john@example.com',
+  title: 'Feature request',
+  // ... other fields
+}
+
+// Anonymous topic without name (gets random name)
+{
+  email: 'john@example.com',
+  title: 'Feature request',
+  // name will be auto-generated like "Blue Happy Elephant"
+}
+```
+
+## Use Cases
+
+- **Feature Requests**: Let users suggest new features
+- **Public Roadmap**: Allow community input on roadmap
+- **Feedback Collection**: Gather user feedback on product direction
+
+## Notes
+
+- Stage must not be marked as private
+- Moderation setting on stage controls auto-publishing
+- Metadata fields are whitelisted for security
+- Creates subscriber record for anonymous submissions
+- Team configuration controls anonymous access

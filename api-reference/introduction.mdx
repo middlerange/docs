@@ -1,33 +1,162 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: Introduction
+description: 'Welcome to the Userorbit API documentation'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Welcome to Userorbit API
 
-## Welcome
+The Userorbit API allows you to programmatically interact with your feedback, roadmap, knowledge base, and user onboarding features. Whether you're building integrations, automating workflows, or embedding Userorbit into your application, our API provides comprehensive access to all platform features.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## API Architecture
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+Userorbit provides three tiers of API access:
+
+### 1. Zapier Integration APIs
+Built specifically for Zapier workflows, these endpoints enable:
+- **Webhook subscriptions** for real-time event notifications
+- **Polling triggers** for periodic data synchronization
+- **Sample data** for testing and development
+- **Dropdown hydration** for dynamic form fields
+
+### 2. Public/Widget APIs
+Designed for embedded widgets and public portals:
+- **Subscriber authentication** and tracking
+- **Feedback submission** from public users
+- **Voting and commenting** on feedback and topics
+- **Knowledge base access** for help centers
+- **Product tours** for user onboarding
+
+### 3. Admin APIs
+Full control for team members and administrators:
+- **Complete CRUD operations** on all resources
+- **Advanced filtering and sorting**
+- **Bulk operations** and imports
+- **Status management** with webhook triggers
+- **Team member assignment**
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Feedback Management" icon="comments">
+    Collect, organize, and respond to user feedback programmatically
+  </Card>
+  <Card title="Roadmap & Topics" icon="map">
+    Publish and manage your product roadmap with public visibility
+  </Card>
+  <Card title="Knowledge Base" icon="book">
+    Access and search documentation and help articles
+  </Card>
+  <Card title="User Onboarding" icon="rocket">
+    Create and deliver interactive product tours
+  </Card>
+</CardGroup>
+
+## Base URLs
+
+All API requests should be made to:
+
+```
+https://api.userorbit.com/v1
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+The API uses Bearer token authentication. Include your API key in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+Some endpoints (widget/public APIs) require subscriber authentication via JWT tokens obtained from the `subscriber.identify` endpoint.
+
+Learn more in the [Authentication](/api-reference/authentication) guide.
+
+## Rate Limits
+
+API requests are rate-limited to ensure fair usage:
+
+- **Standard**: 100 requests per minute
+- **Burst**: 1000 requests per hour
+- **Daily**: 50,000 requests per day
+
+Rate limit headers are included in all responses:
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 99
+X-RateLimit-Reset: 1640000000
+```
+
+## Response Format
+
+All API responses follow a consistent JSON structure:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "data": { ... },           // Response payload
+  "pagination": { ... },      // Pagination info (for list endpoints)
+  "error": "...",            // Error message (on errors)
+  "success": true            // Success indicator (on mutations)
+}
 ```
+
+## Error Handling
+
+The API uses standard HTTP status codes:
+
+| Status Code | Description |
+|-------------|-------------|
+| 200 | Success |
+| 201 | Created |
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid or missing API key |
+| 403 | Forbidden - Insufficient permissions |
+| 404 | Not Found - Resource doesn't exist |
+| 429 | Too Many Requests - Rate limit exceeded |
+| 500 | Internal Server Error |
+
+Error responses include details:
+
+```json
+{
+  "error": "Invalid API key",
+  "message": "The provided API key is not valid or has been revoked",
+  "statusCode": 401
+}
+```
+
+## Webhooks
+
+Userorbit supports real-time webhooks for important events. Subscribe via the Zapier API endpoints to receive notifications when:
+
+- Feedback is created, updated, or status changes
+- Comments are added
+- Votes are cast
+- Topics are published or updated
+
+Learn more in the [Zapier Integration](/api-reference/zapier/subscribe) section.
+
+## SDKs & Libraries
+
+Official SDKs coming soon for:
+- JavaScript/TypeScript
+- Python
+- Ruby
+- PHP
+
+## Support
+
+Need help? We're here for you:
+
+- **Documentation**: https://docs.userorbit.com
+- **Email Support**: support@userorbit.com
+- **Community**: https://community.userorbit.com
+
+## Changelog
+
+Stay updated with API changes:
+- [API Changelog](https://userorbit.com/changelog/api)
+- [Breaking Changes](https://userorbit.com/changelog/breaking)
+
+---
+
+Ready to get started? Check out the [Quickstart Guide](/api-reference/quickstart) or dive into the [API Reference](/api-reference/zapier/subscribe).

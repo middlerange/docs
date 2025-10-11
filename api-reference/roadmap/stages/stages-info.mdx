@@ -1,0 +1,222 @@
+---
+title: "Get Stage Info"
+api: "POST /v1/public/stages.info"
+description: "Get detailed information about a specific stage including its topics."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="stageId" type="string" required>
+  The stage ID to get information for
+</ParamField>
+
+<ParamField body="limit" type="number" default="50">
+  Number of topics to return
+</ParamField>
+
+<ParamField body="offset" type="number" default="0">
+  Number of topics to skip for pagination
+</ParamField>
+
+<ParamField body="sort" type="string" default="createdAt">
+  Field to sort topics by (createdAt, updatedAt, title, voteCount)
+</ParamField>
+
+<ParamField body="direction" type="string" default="DESC">
+  Sort direction (ASC or DESC)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Stage object with full details
+  <Expandable title="Stage Properties">
+    <ResponseField name="id" type="string">
+      Stage ID (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Stage display name
+    </ResponseField>
+    <ResponseField name="roadmapId" type="string">
+      Roadmap this stage belongs to
+    </ResponseField>
+    <ResponseField name="order" type="number">
+      Display order
+    </ResponseField>
+    <ResponseField name="meta" type="object">
+      Stage metadata including isPrivate, disableModeration, color
+    </ResponseField>
+    <ResponseField name="topicCount" type="number">
+      Total number of topics in this stage
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="topics" type="array">
+  Array of topic objects in this stage
+  <Expandable title="Topic Object">
+    <ResponseField name="id" type="string">
+      Topic ID
+    </ResponseField>
+    <ResponseField name="title" type="string">
+      Topic title
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Topic description
+    </ResponseField>
+    <ResponseField name="voteCount" type="number">
+      Number of votes
+    </ResponseField>
+    <ResponseField name="commentCount" type="number">
+      Number of comments
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Pagination metadata
+  <Expandable title="properties">
+    <ResponseField name="total" type="number">
+      Total number of topics in stage
+    </ResponseField>
+    <ResponseField name="limit" type="number">
+      Page size
+    </ResponseField>
+    <ResponseField name="offset" type="number">
+      Current offset
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/stages.info' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "stageId": "stage-uuid",
+  "limit": 10,
+  "sort": "voteCount",
+  "direction": "DESC"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/stages.info', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    stageId: 'stage-uuid',
+    limit: 10,
+    sort: 'voteCount',
+    direction: 'DESC'
+  })
+});
+
+const { data: stage, topics, pagination } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/stages.info',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'stageId': 'stage-uuid',
+        'limit': 10,
+        'sort': 'voteCount',
+        'direction': 'DESC'
+    }
+)
+
+result = response.json()
+stage = result['data']
+topics = result['topics']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "stage-uuid-1",
+    "name": "Under Consideration",
+    "roadmapId": "roadmap-uuid",
+    "order": 1,
+    "meta": {
+      "isPrivate": false,
+      "disableModeration": false,
+      "color": "#E5E7EB"
+    },
+    "topicCount": 23,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  "topics": [
+    {
+      "id": "topic-uuid-1",
+      "title": "Add mobile app",
+      "description": "Native mobile apps for iOS and Android",
+      "voteCount": 156,
+      "commentCount": 23,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "topic-uuid-2",
+      "title": "Dark mode support",
+      "description": "Add dark mode theme option",
+      "voteCount": 89,
+      "commentCount": 12,
+      "createdAt": "2024-01-14T09:00:00Z",
+      "updatedAt": "2024-01-14T09:00:00Z"
+    }
+  ],
+  "pagination": {
+    "total": 23,
+    "limit": 10,
+    "offset": 0
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Includes Topics**: Returns topics currently in this stage
+- **Paginated**: Topics are paginated for performance
+- **Sortable**: Topics can be sorted by various fields
+- **Public Only**: Private stages return 404 for non-team members
+
+## Use Cases
+
+- **Stage Detail View**: Show all topics in a specific stage
+- **Kanban Column**: Display topics within a stage column
+- **Progress Tracking**: Monitor items in each stage
+
+## Notes
+
+- Topics include vote and comment counts
+- Returns 404 if stage is private and user is not a team member
+- Pagination allows efficient loading of stages with many topics
+- Stage metadata includes color for visual customization

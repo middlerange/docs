@@ -1,0 +1,266 @@
+---
+title: Authentication
+description: 'Learn how to authenticate with the Userorbit API'
+---
+
+## Overview
+
+Userorbit API uses two authentication methods depending on the endpoint type:
+
+1. **API Key Authentication** - For team/admin operations and Zapier integrations
+2. **Subscriber JWT Authentication** - For public widget and subscriber-specific operations
+
+## API Key Authentication
+
+### Getting Your API Key
+
+1. Log into your Userorbit dashboard
+2. Navigate to **Settings** → **API Keys**
+3. Click **Create New API Key**
+4. Copy the generated key (you won't be able to see it again)
+5. Store it securely (never commit to version control)
+
+### Using API Keys
+
+Include your API key in the `Authorization` header using Bearer authentication:
+
+```bash
+Authorization: Bearer team_api_key
+```
+
+<CodeGroup>
+
+```bash cURL
+curl https://api.userorbit.com/v1/feedbacks.list \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.userorbit.com/v1/feedbacks.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+```python Python
+import requests
+
+headers = {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+}
+
+response = requests.post(
+    'https://api.userorbit.com/v1/feedbacks.list',
+    headers=headers
+)
+```
+
+</CodeGroup>
+
+### API Key Format
+
+API keys follow this format:
+```
+<random_38_characters>
+```
+
+### API Key Permissions
+
+Each API key is tied to:
+- A specific **team** (all operations are scoped to this team)
+- A **user** (for audit logging)
+- **Permissions** inherited from the user's role
+
+### Best Practices
+
+<Warning>
+**Security First**: Never expose API keys in client-side code, public repositories, or logs.
+</Warning>
+
+- Store keys in environment variables
+- Use separate keys for development and production
+- Rotate keys regularly (every 90 days recommended)
+- Delete unused keys immediately
+- Monitor API key usage in your dashboard
+
+## Subscriber JWT Authentication
+
+### Overview
+
+Public/widget APIs require **subscriber authentication** to identify end-users and track their activity.
+
+### Getting a JWT Token
+
+First, identify the subscriber using the `subscriber.identify` endpoint:
+
+```bash
+curl https://api.userorbit.com/v1/public/subscriber.identify \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "name": "John Doe"
+  }'
+```
+
+Response includes a JWT token:
+
+```json
+{
+  "data": { ... },
+  "code": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "isFirstSignin": true
+}
+```
+
+### Using JWT Tokens
+
+Use the JWT token for subsequent subscriber operations:
+
+```bash
+curl https://api.userorbit.com/v1/public/feedbacks.create \
+  -H "Authorization: Bearer SUBSCRIBER_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Feature request",
+    "text": "Add dark mode support"
+  }'
+```
+
+### JWT Token Lifespan
+
+- Tokens expire after **90 days**
+- Automatically refreshed on widget initialization
+- Store securely in cookies or local storage (for web)
+
+### Subscriber Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant Database
+
+    Client->>API: POST /subscriber.identify (with API key)
+    API->>Database: Find or create subscriber
+    Database-->>API: Subscriber data
+    API-->>Client: JWT token + subscriber data
+
+    Client->>API: POST /feedbacks.create (with JWT)
+    API->>API: Verify JWT & extract subscriber
+    API->>Database: Create feedback
+    Database-->>API: Created feedback
+    API-->>Client: Feedback data
+```
+
+## Dual Authentication
+
+Some endpoints support **both authentication methods**:
+
+```bash
+# Using API key (team context)
+curl https://api.userorbit.com/v1/public/documents.list \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Using subscriber JWT (personalized results)
+curl https://api.userorbit.com/v1/public/documents.list \
+  -H "Authorization: Bearer SUBSCRIBER_JWT_TOKEN"
+```
+
+When authenticated with a subscriber JWT, the API returns personalized data (e.g., which documents the user has reacted to).
+
+## Error Responses
+
+### Invalid API Key
+
+```json
+{
+  "error": "Authentication required",
+  "statusCode": 401
+}
+```
+
+### Expired JWT
+
+```json
+{
+  "error": "Token expired",
+  "statusCode": 401
+}
+```
+
+### Missing Authorization
+
+```json
+{
+  "error": "Authentication required",
+  "statusCode": 401
+}
+```
+
+## Testing Authentication
+
+Test your API key:
+
+```bash
+curl https://api.userorbit.com/v1/teams.info \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+Successful response confirms authentication:
+
+```json
+{
+  "data": {
+    "id": "team-uuid",
+    "name": "Acme Corp",
+    "subdomain": "acme"
+  }
+}
+```
+
+## Revoking Access
+
+### Revoke API Keys
+
+1. Go to **Settings** → **API Keys**
+2. Find the key to revoke
+3. Click **Delete**
+4. Confirm deletion
+
+All requests using the revoked key will immediately fail with 401 errors.
+
+### Invalidate JWT Tokens
+
+Subscriber JWT tokens are automatically invalidated when:
+- The subscriber is deleted
+- The team is deleted
+- 90 days have passed since issuance
+
+## Security Considerations
+
+<CardGroup cols={2}>
+  <Card title="Use HTTPS Only" icon="lock">
+    Always make API requests over HTTPS to prevent key interception
+  </Card>
+  <Card title="Rotate Keys" icon="rotate">
+    Regularly rotate API keys (every 90 days recommended)
+  </Card>
+  <Card title="Least Privilege" icon="shield">
+    Create separate keys with minimal permissions for each use case
+  </Card>
+  <Card title="Monitor Usage" icon="chart-line">
+    Track API key usage and set up alerts for unusual activity
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+- [Quickstart Guide](/api-reference/quickstart) - Make your first API call
+- [Zapier Integration](/api-reference/zapier/subscribe) - Set up webhooks
+- [Public APIs](/api-reference/public/subscriber-identify) - Build embedded widgets

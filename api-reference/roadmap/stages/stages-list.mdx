@@ -1,0 +1,188 @@
+---
+title: "List Stages"
+api: "POST /v1/public/stages.list"
+description: "Get all stages for a roadmap. Returns public stages ordered by their display order."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="roadmapId" type="string" required>
+  The roadmap ID to get stages for
+</ParamField>
+
+<ParamField body="includePrivate" type="boolean" default="false">
+  Include private stages (requires team member authentication)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of stage objects
+  <Expandable title="Stage Object">
+    <ResponseField name="id" type="string">
+      Stage ID (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Stage display name (e.g., "Planned", "In Progress", "Completed")
+    </ResponseField>
+    <ResponseField name="roadmapId" type="string">
+      Roadmap this stage belongs to
+    </ResponseField>
+    <ResponseField name="order" type="number">
+      Display order of the stage
+    </ResponseField>
+    <ResponseField name="meta" type="object">
+      Stage metadata
+      <Expandable title="Meta Properties">
+        <ResponseField name="isPrivate" type="boolean">
+          Whether stage is private (hidden from public)
+        </ResponseField>
+        <ResponseField name="disableModeration" type="boolean">
+          Whether moderation is disabled for topics in this stage
+        </ResponseField>
+        <ResponseField name="color" type="string">
+          Hex color code for the stage
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+    <ResponseField name="updatedAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/stages.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "roadmapId": "roadmap-uuid"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/stages.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    roadmapId: 'roadmap-uuid'
+  })
+});
+
+const { data: stages } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/stages.list',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'roadmapId': 'roadmap-uuid'
+    }
+)
+
+stages = response.json()['data']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+    {
+      "id": "stage-uuid-1",
+      "name": "Under Consideration",
+      "roadmapId": "roadmap-uuid",
+      "order": 1,
+      "meta": {
+        "isPrivate": false,
+        "disableModeration": false,
+        "color": "#E5E7EB"
+      },
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "stage-uuid-2",
+      "name": "Planned",
+      "roadmapId": "roadmap-uuid",
+      "order": 2,
+      "meta": {
+        "isPrivate": false,
+        "disableModeration": false,
+        "color": "#3B82F6"
+      },
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "stage-uuid-3",
+      "name": "In Progress",
+      "roadmapId": "roadmap-uuid",
+      "order": 3,
+      "meta": {
+        "isPrivate": false,
+        "disableModeration": false,
+        "color": "#F59E0B"
+      },
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "stage-uuid-4",
+      "name": "Completed",
+      "roadmapId": "roadmap-uuid",
+      "order": 4,
+      "meta": {
+        "isPrivate": false,
+        "disableModeration": false,
+        "color": "#10B981"
+      },
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Public Only**: By default, returns only public stages (`isPrivate: false`)
+- **Ordered**: Stages returned in display order (order field)
+- **Customizable**: Each roadmap can have different stages
+
+## Use Cases
+
+- **Roadmap Column Headers**: Display stage names as column headers
+- **Status Dropdowns**: Populate stage selection dropdowns
+- **Filtering**: Allow users to filter topics by stage
+
+## Notes
+
+- Stages are specific to each roadmap
+- Order determines display sequence (1, 2, 3, etc.)
+- Private stages only visible to team members
+- Stages can have custom colors for visual organization

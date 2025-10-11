@@ -1,0 +1,101 @@
+---
+title: "List Roadmaps"
+api: "POST /v1/public/roadmap.list"
+description: "Get the first roadmap for the team. Simple endpoint for basic roadmap info."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+No request body required.
+
+## Response
+
+<ResponseField name="data" type="object">
+  Roadmap object (or null if none exists)
+  <Expandable title="Roadmap Object">
+    <ResponseField name="id" type="string">Roadmap ID</ResponseField>
+    <ResponseField name="name" type="string">Roadmap name</ResponseField>
+    <ResponseField name="teamId" type="string">Team ID</ResponseField>
+    <ResponseField name="meta" type="object">Roadmap metadata</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">Last update timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/roadmap.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/roadmap.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+const { data: roadmap } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/roadmap.list',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    }
+)
+
+roadmap = response.json()['data']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "roadmap-uuid",
+    "name": "Product Roadmap",
+    "teamId": "team-uuid",
+    "meta": {
+      "feedback": false,
+      "description": "Our product development roadmap"
+    },
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **First Roadmap**: Returns the first roadmap found for the team
+- **No Filtering**: Does not filter by feedback type
+
+## Use Cases
+
+- **Basic Info**: Get roadmap ID and metadata
+- **Existence Check**: Verify team has a roadmap
+
+## Notes
+
+- Returns first roadmap (teams usually have 1-2 roadmaps)
+- Use `roadmap.info` for more detailed data with stages and topics
+- Returns null if team has no roadmaps

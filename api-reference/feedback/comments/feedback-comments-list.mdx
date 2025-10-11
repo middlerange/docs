@@ -1,0 +1,202 @@
+---
+title: "List Feedback Comments"
+api: "POST /v1/public/feedback-comments.list"
+description: "Get all comments on a feedback item with pagination and sorting options."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="feedbackId" type="string" required>
+  The feedback ID to get comments for
+</ParamField>
+
+<ParamField body="limit" type="number" default="20">
+  Number of comments to return per page
+</ParamField>
+
+<ParamField body="offset" type="number" default="0">
+  Number of comments to skip for pagination
+</ParamField>
+
+<ParamField body="sort" type="string" default="createdAt">
+  Field to sort by (createdAt, updatedAt)
+</ParamField>
+
+<ParamField body="direction" type="string" default="ASC">
+  Sort direction (ASC for oldest first, DESC for newest first)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of comment objects
+  <Expandable title="Comment Object">
+    <ResponseField name="id" type="string">
+      Comment ID (UUID)
+    </ResponseField>
+    <ResponseField name="text" type="string">
+      Comment content
+    </ResponseField>
+    <ResponseField name="feedbackId" type="string">
+      Feedback this comment belongs to
+    </ResponseField>
+    <ResponseField name="subscriberId" type="string">
+      ID of subscriber who created the comment
+    </ResponseField>
+    <ResponseField name="subscriber" type="object">
+      Subscriber details (name, email, avatar)
+    </ResponseField>
+    <ResponseField name="isPrivate" type="boolean">
+      Whether comment is private (team only)
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+    <ResponseField name="updatedAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Pagination metadata
+  <Expandable title="properties">
+    <ResponseField name="total" type="number">
+      Total number of comments
+    </ResponseField>
+    <ResponseField name="limit" type="number">
+      Page size
+    </ResponseField>
+    <ResponseField name="offset" type="number">
+      Current offset
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/feedback-comments.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "feedbackId": "feedback-uuid",
+  "limit": 20,
+  "offset": 0,
+  "direction": "ASC"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/feedback-comments.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    feedbackId: 'feedback-uuid',
+    limit: 20,
+    offset: 0,
+    direction: 'ASC'
+  })
+});
+
+const { data: comments, pagination } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/feedback-comments.list',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'feedbackId': 'feedback-uuid',
+        'limit': 20,
+        'offset': 0,
+        'direction': 'ASC'
+    }
+)
+
+result = response.json()
+comments = result['data']
+pagination = result['pagination']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+    {
+      "id": "comment-uuid-1",
+      "text": "Great idea! We really need this feature.",
+      "feedbackId": "feedback-uuid",
+      "subscriberId": "subscriber-uuid-1",
+      "subscriber": {
+        "id": "subscriber-uuid-1",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatarUrl": "https://example.com/avatar.jpg"
+      },
+      "isPrivate": false,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "comment-uuid-2",
+      "text": "We're working on this! Expected in Q2.",
+      "feedbackId": "feedback-uuid",
+      "subscriberId": "team-member-uuid",
+      "subscriber": {
+        "id": "team-member-uuid",
+        "name": "Support Team",
+        "email": "support@company.com",
+        "avatarUrl": null
+      },
+      "isPrivate": false,
+      "createdAt": "2024-01-15T14:22:00Z",
+      "updatedAt": "2024-01-15T14:22:00Z"
+    }
+  ],
+  "pagination": {
+    "total": 12,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Chronological Order**: By default, comments sorted oldest first (ASC)
+- **Includes Subscriber**: Each comment includes subscriber details
+- **Public & Private**: Returns both public and private comments
+- **Paginated**: Use limit/offset for loading more comments
+
+## Use Cases
+
+- **Comment Thread**: Display discussion on feedback items
+- **Activity Feed**: Show engagement and responses
+- **Moderation**: Review all comments on feedback
+
+## Notes
+
+- Private comments only visible to team members
+- Includes subscriber avatar and name for display
+- Supports pagination for long comment threads
+- Default sort is oldest first for conversational flow

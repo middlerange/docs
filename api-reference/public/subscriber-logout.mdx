@@ -1,0 +1,75 @@
+---
+title: "Logout Subscriber"
+api: "POST /v1/public/subscriber.logout"
+description: "Logout a subscriber and invalidate their JWT token."
+---
+
+## Authentication
+
+Requires subscriber JWT token from login/identify.
+
+```bash
+Authorization: Bearer SUBSCRIBER_JWT_TOKEN
+```
+
+## Request Body
+
+This endpoint does not require any request body parameters.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Returns true if logout was successful
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/subscriber.logout' \
+--header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
+--header 'Content-Type: application/json'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/subscriber.logout', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/subscriber.logout',
+    headers={
+        'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+        'Content-Type': 'application/json'
+    }
+)
+
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true
+}
+```
+
+</ResponseExample>
+
+## Notes
+
+- Invalidates the JWT token
+- Clears the `publicAccessToken` cookie if present
+- Subscriber will need to login again to access protected resources

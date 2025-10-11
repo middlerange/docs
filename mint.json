@@ -25,7 +25,12 @@
     "name": "Dashboard",
     "url": "https://app.userorbit.com"
   },
-  "tabs": [],
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
   "anchors": [
     {
       "name": "Community",
@@ -44,12 +49,94 @@
       "pages": ["userorbit", "how-does-it-work"]
     },
     {
-      "group": "Documentation",
-      "pages": ["documentation/quickstart", "documentation/framework-guides"]
+      "group": "API Reference",
+      "pages": [
+        "api-reference/introduction",
+        "api-reference/authentication",
+        "api-reference/quickstart"
+      ]
     },
     {
-      "group": "Developers",
-      "pages": ["documentation/userorbit-js"]
+      "group": "Roadmap",
+      "pages": [
+        {
+          "group": "Topics",
+          "pages": [
+            "api-reference/roadmap/topics/topics-list",
+            "api-reference/roadmap/topics/topics-info",
+            "api-reference/roadmap/topics/topics-create",
+            "api-reference/roadmap/topics/topics-subscribe",
+            "api-reference/roadmap/topics/topics-unsubscribe",
+            "api-reference/roadmap/topics/topics-subscriber-info"
+          ]
+        },
+        {
+          "group": "Stages",
+          "pages": [
+            "api-reference/roadmap/stages/stages-list",
+            "api-reference/roadmap/stages/stages-info"
+          ]
+        },
+        {
+          "group": "Comments",
+          "pages": [
+            "api-reference/roadmap/comments/topic-comments-count",
+            "api-reference/roadmap/comments/topic-comments-list",
+            "api-reference/roadmap/comments/topic-comments-create"
+          ]
+        },
+        {
+          "group": "Votes",
+          "pages": [
+            "api-reference/roadmap/votes/topic-votes-info",
+            "api-reference/roadmap/votes/topic-votes-create",
+            "api-reference/roadmap/votes/topic-votes-delete"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Feedback",
+      "pages": [
+        {
+          "group": "Comments",
+          "pages": [
+            "api-reference/feedback/comments/feedback-comments-count",
+            "api-reference/feedback/comments/feedback-comments-list",
+            "api-reference/feedback/comments/feedback-comments-create"
+          ]
+        },
+        {
+          "group": "Votes",
+          "pages": [
+            "api-reference/feedback/votes/feedback-votes-info",
+            "api-reference/feedback/votes/feedback-votes-create",
+            "api-reference/feedback/votes/feedback-votes-delete"
+          ]
+        },
+        {
+          "group": "Boards",
+          "pages": [
+            "api-reference/feedback/boards/feedback-boards-list"
+          ]
+        },
+        {
+          "group": "Management",
+          "pages": [
+            "api-reference/feedback/management/feedback-create",
+            "api-reference/feedback/management/feedback-list",
+            "api-reference/feedback/management/feedback-info",
+            "api-reference/feedback/management/feedback-update",
+            "api-reference/feedback/management/feedback-delete"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Subscribers",
+      "pages": [
+        "api-reference/subscribers/subscriber-identify"
+      ]
     }
   ],
   "footerSocials": {

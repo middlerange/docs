@@ -1,0 +1,144 @@
+---
+title: "Update Feedback"
+api: "POST /v1/public/feedbacks.update"
+description: "Update an existing feedback item. Only the creator can update their own feedback."
+---
+
+## Authentication
+
+Requires subscriber JWT token from login/identify.
+
+```bash
+Authorization: Bearer SUBSCRIBER_JWT_TOKEN
+```
+
+## Request Body
+
+<ParamField body="feedbackId" type="string" required>
+  The feedback ID to update
+</ParamField>
+
+<ParamField body="title" type="string">
+  Updated feedback title
+</ParamField>
+
+<ParamField body="text" type="string">
+  Updated feedback description
+</ParamField>
+
+<ParamField body="boardId" type="string">
+  Move feedback to a different board
+</ParamField>
+
+<ParamField body="type" type="string">
+  Update feedback type/category
+</ParamField>
+
+<ParamField body="meta" type="object">
+  Update custom metadata (merged with existing)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Updated feedback object with all fields
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/feedbacks.update' \
+--header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "feedbackId": "feedback-uuid",
+  "title": "Add dark mode support (Updated)",
+  "text": "Updated description with more details about dark mode requirements."
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/feedbacks.update', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    feedbackId: 'feedback-uuid',
+    title: 'Add dark mode support (Updated)',
+    text: 'Updated description with more details.'
+  })
+});
+
+const { data: feedback } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/feedbacks.update',
+    headers={
+        'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'feedbackId': 'feedback-uuid',
+        'title': 'Add dark mode support (Updated)',
+        'text': 'Updated description with more details.'
+    }
+)
+
+feedback = response.json()['data']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "feedback-uuid",
+    "urlId": "abc123def456",
+    "url": "/add-dark-mode-support-updated-abc123def456",
+    "title": "Add dark mode support (Updated)",
+    "text": "Updated description with more details about dark mode requirements.",
+    "status": "planned",
+    "priority": "high",
+    "boardId": "board-uuid",
+    "creatorId": "subscriber-uuid",
+    "teamId": "team-uuid",
+    "feedbackVotesCount": 42,
+    "feedbackCommentsCount": 12,
+    "publishedAt": "2024-01-15T10:30:00Z",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-20T15:45:00Z",
+    "archivedAt": null
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Creator Only**: Only the feedback creator can update it
+- **Partial Updates**: Only provided fields are updated
+- **URL Regeneration**: URL is regenerated if title changes
+- **Timestamp Update**: `updatedAt` timestamp is updated automatically
+
+## Use Cases
+
+- **Edit Feedback**: Allow users to refine their feedback
+- **Correct Mistakes**: Fix typos or add missing information
+- **Update Requirements**: Clarify or expand on original feedback
+
+## Notes
+
+- Requires valid subscriber JWT token
+- Only the creator can update (checked via subscriber ID)
+- Returns 403 if user is not the creator
+- Returns 404 if feedback doesn't exist
+- Metadata is merged, not replaced

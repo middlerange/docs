@@ -1,0 +1,128 @@
+---
+title: "Vote on Feedback"
+api: "POST /v1/public/feedback-votes.create"
+description: "Cast a vote on a feedback item. Requires subscriber authentication. One vote per subscriber."
+---
+
+## Authentication
+
+Requires subscriber JWT token from login/identify.
+
+```bash
+Authorization: Bearer SUBSCRIBER_JWT_TOKEN
+```
+
+## Request Body
+
+<ParamField body="feedbackId" type="string" required>
+  The feedback ID to vote on
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Created vote object
+  <Expandable title="Vote Properties">
+    <ResponseField name="id" type="string">
+      Vote ID (UUID)
+    </ResponseField>
+    <ResponseField name="feedbackId" type="string">
+      Feedback that was voted on
+    </ResponseField>
+    <ResponseField name="subscriberId" type="string">
+      ID of subscriber who voted
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="totalVotes" type="number">
+  Updated total vote count for this feedback
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/feedback-votes.create' \
+--header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "feedbackId": "feedback-uuid"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/feedback-votes.create', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    feedbackId: 'feedback-uuid'
+  })
+});
+
+const { data: vote, totalVotes } = await response.json();
+console.log(`Vote created! Total votes: ${totalVotes}`);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/feedback-votes.create',
+    headers={
+        'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'feedbackId': 'feedback-uuid'
+    }
+)
+
+result = response.json()
+vote = result['data']
+total_votes = result['totalVotes']
+print(f'Vote created! Total votes: {total_votes}')
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "vote-uuid",
+    "feedbackId": "feedback-uuid",
+    "subscriberId": "subscriber-uuid",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "totalVotes": 43
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **One Vote Per User**: Each subscriber can only vote once per feedback
+- **Duplicate Prevention**: Returns existing vote if already voted
+- **Vote Count Update**: Feedback vote count incremented automatically
+- **Notifications**: May trigger notifications to feedback creator
+
+## Use Cases
+
+- **User Engagement**: Allow users to upvote feedback they support
+- **Prioritization**: Use votes to gauge feature demand
+- **Popular Feedback**: Sort feedback by vote count
+
+## Notes
+
+- Requires valid subscriber JWT token
+- Returns 409 if user has already voted (use delete to unvote first)
+- Vote count updates immediately
+- Triggers webhook events if configured

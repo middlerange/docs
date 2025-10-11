@@ -1,0 +1,95 @@
+---
+title: "Subscribe to Topic"
+api: "POST /v1/public/topics.subscribe"
+description: "Subscribe to notifications for a topic. Get notified of comments, votes, and status changes."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer SUBSCRIBER_JWT_TOKEN
+```
+
+## Request Body
+
+<ParamField body="id" type="string" required>
+  Topic ID (UUID) to subscribe to
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Subscription result
+  <Expandable title="properties">
+    <ResponseField name="topicSubscriber" type="object">Topic subscription record</ResponseField>
+    <ResponseField name="ok" type="boolean">Always true</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/topics.subscribe' \
+--header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "id": "topic-uuid-123"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/topics.subscribe', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${subscriberToken}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ id: topicId })
+});
+
+const { data } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/topics.subscribe',
+    headers={
+        'Authorization': f'Bearer {subscriber_token}',
+        'Content-Type': 'application/json'
+    },
+    json={'id': topic_id}
+)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "topicSubscriber": {
+      "id": "subscription-uuid",
+      "topicId": "topic-uuid-123",
+      "subscriberId": "sub-uuid-789",
+      "createdAt": "2024-01-17T15:30:00Z"
+    },
+    "ok": true
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Event Trigger**: Fires `topic-subscribers.create` event
+- **Team Validation**: Subscriber must belong to same team
+- **Idempotent**: Safe to call multiple times
+
+## Notes
+
+- Triggers webhook event for integrations
+- Subscriber receives notifications for topic updates

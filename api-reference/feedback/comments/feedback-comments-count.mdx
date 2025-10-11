@@ -1,0 +1,103 @@
+---
+title: "Get Feedback Comment Count"
+api: "POST /v1/public/feedback-comments.count"
+description: "Get the total number of comments on a feedback item."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="feedbackId" type="string" required>
+  The feedback ID to get comment count for
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Comment count data
+  <Expandable title="properties">
+    <ResponseField name="count" type="number">
+      Total number of comments on this feedback
+    </ResponseField>
+    <ResponseField name="feedbackId" type="string">
+      The feedback ID
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/feedback-comments.count' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "feedbackId": "feedback-uuid"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/feedback-comments.count', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    feedbackId: 'feedback-uuid'
+  })
+});
+
+const { data } = await response.json();
+console.log(`Comments: ${data.count}`);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/feedback-comments.count',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'feedbackId': 'feedback-uuid'
+    }
+)
+
+count = response.json()['data']['count']
+print(f'Comments: {count}')
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "count": 12,
+    "feedbackId": "feedback-uuid"
+  }
+}
+```
+
+</ResponseExample>
+
+## Use Cases
+
+- **Display Comment Count**: Show number of comments on feedback items
+- **Engagement Metrics**: Track discussion activity
+- **Quick Stats**: Get count without loading all comments
+
+## Notes
+
+- Includes all comments (public and private)
+- Count updates in real-time as comments are added
+- Does not require loading the full comment list

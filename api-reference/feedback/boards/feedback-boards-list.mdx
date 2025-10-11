@@ -1,0 +1,178 @@
+---
+title: "List Feedback Boards"
+api: "POST /v1/public/feedback-boards.list"
+description: "Get all public feedback boards for the team. Boards are used to organize feedback by category or type."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+This endpoint does not require any request body parameters.
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of feedback board objects
+  <Expandable title="Board Object">
+    <ResponseField name="id" type="string">
+      Board ID (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Board display name (e.g., "Feature Requests", "Bug Reports")
+    </ResponseField>
+    <ResponseField name="slug" type="string">
+      URL-friendly slug
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Board description
+    </ResponseField>
+    <ResponseField name="teamId" type="string">
+      Team this board belongs to
+    </ResponseField>
+    <ResponseField name="order" type="number">
+      Display order
+    </ResponseField>
+    <ResponseField name="meta" type="object">
+      Board metadata
+      <Expandable title="Meta Properties">
+        <ResponseField name="isPublic" type="boolean">
+          Whether board is publicly visible
+        </ResponseField>
+        <ResponseField name="allowPublicSubmissions" type="boolean">
+          Whether public users can submit feedback
+        </ResponseField>
+        <ResponseField name="requireModeration" type="boolean">
+          Whether submissions require approval
+        </ResponseField>
+        <ResponseField name="color" type="string">
+          Hex color code for the board
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="feedbackCount" type="number">
+      Total number of feedback items in this board
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/feedback-boards.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/feedback-boards.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+const { data: boards } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/feedback-boards.list',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    }
+)
+
+boards = response.json()['data']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+    {
+      "id": "board-uuid-1",
+      "name": "Feature Requests",
+      "slug": "feature-requests",
+      "description": "Suggest new features and improvements",
+      "teamId": "team-uuid",
+      "order": 1,
+      "meta": {
+        "isPublic": true,
+        "allowPublicSubmissions": true,
+        "requireModeration": false,
+        "color": "#3B82F6"
+      },
+      "feedbackCount": 142,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "board-uuid-2",
+      "name": "Bug Reports",
+      "slug": "bug-reports",
+      "description": "Report bugs and issues",
+      "teamId": "team-uuid",
+      "order": 2,
+      "meta": {
+        "isPublic": true,
+        "allowPublicSubmissions": true,
+        "requireModeration": false,
+        "color": "#EF4444"
+      },
+      "feedbackCount": 67,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "board-uuid-3",
+      "name": "General Feedback",
+      "slug": "general-feedback",
+      "description": "Share your thoughts and ideas",
+      "teamId": "team-uuid",
+      "order": 3,
+      "meta": {
+        "isPublic": true,
+        "allowPublicSubmissions": true,
+        "requireModeration": true,
+        "color": "#10B981"
+      },
+      "feedbackCount": 89,
+      "createdAt": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Public Only**: Returns only boards marked as public
+- **Ordered**: Boards returned in display order
+- **With Counts**: Includes feedback count for each board
+
+## Use Cases
+
+- **Board Selection**: Let users choose which board to submit feedback to
+- **Navigation**: Display board categories in feedback portal
+- **Statistics**: Show feedback distribution across boards
+
+## Notes
+
+- Only public boards returned (isPublic: true)
+- Boards ordered by the `order` field
+- Each board can have custom color and settings
+- Feedback count includes all feedback (published and unpublished)

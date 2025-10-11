@@ -1,0 +1,130 @@
+---
+title: "Create Subscriber with Password"
+api: "POST /v1/public/subscriber.create"
+description: "Create a new subscriber account with password authentication. Used for subscriber self-registration."
+---
+
+## Authentication
+
+This endpoint requires API key authentication via the `Authorization` header.
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  Subscriber's email address. Must be unique.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Password for the subscriber account. Minimum 8 characters.
+</ParamField>
+
+<ParamField body="name" type="string">
+  Subscriber's display name
+</ParamField>
+
+<ParamField body="meta" type="object">
+  Custom metadata for the subscriber
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Created subscriber object
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">
+      Subscriber ID (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Subscriber's name
+    </ResponseField>
+    <ResponseField name="email" type="string">
+      Subscriber's email
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  JWT token for authentication
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/subscriber.create' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "email": "jane@example.com",
+  "password": "SecurePass123!",
+  "name": "Jane Smith"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/subscriber.create', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: 'jane@example.com',
+    password: 'SecurePass123!',
+    name: 'Jane Smith'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/subscriber.create',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'email': 'jane@example.com',
+        'password': 'SecurePass123!',
+        'name': 'Jane Smith'
+    }
+)
+
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "87654321-1234-1234-1234-123456789012",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "source": "api",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "code": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+</ResponseExample>
+
+## Notes
+
+- Email must be unique across the team
+- Password is hashed and stored securely
+- Returns JWT token for immediate authentication
+- Email is case-insensitive

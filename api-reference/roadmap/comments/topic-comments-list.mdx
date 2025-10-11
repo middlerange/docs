@@ -1,0 +1,149 @@
+---
+title: "List Topic Comments"
+api: "POST /v1/public/topic-comments.list"
+description: "Get all comments on a topic with nested replies. Supports sorting and pagination."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="id" type="string">
+  Topic ID (UUID). If not provided, returns comments from all team topics.
+</ParamField>
+
+<ParamField body="sort" type="string" default="createdAt">
+  Field to sort by (createdAt, updatedAt)
+</ParamField>
+
+<ParamField body="direction" type="string" default="DESC">
+  Sort direction (ASC or DESC)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of comment objects with nested replies
+  <Expandable title="Comment Object">
+    <ResponseField name="id" type="string">Comment ID</ResponseField>
+    <ResponseField name="text" type="string">Comment text</ResponseField>
+    <ResponseField name="topicId" type="string">Topic ID</ResponseField>
+    <ResponseField name="creatorId" type="string">Subscriber ID</ResponseField>
+    <ResponseField name="parentId" type="string">Parent comment ID (null for top-level)</ResponseField>
+    <ResponseField name="source" type="string">Comment source</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+    <ResponseField name="subscriber" type="object">Comment author</ResponseField>
+    <ResponseField name="replies" type="array">Nested reply comments</ResponseField>
+    <ResponseField name="topic" type="object">Topic details (when listing all team comments)</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Pagination metadata
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL - Specific Topic
+curl --location --request POST 'https://api.yourapp.com/v1/public/topic-comments.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "id": "topic-uuid-123",
+  "sort": "createdAt",
+  "direction": "DESC"
+}'
+```
+
+```bash cURL - All Team Topics (Zapier)
+curl --location --request POST 'https://api.yourapp.com/v1/public/topic-comments.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "sort": "createdAt",
+  "direction": "DESC"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/topic-comments.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    id: topicId,
+    sort: 'createdAt',
+    direction: 'DESC'
+  })
+});
+
+const { data: comments } = await response.json();
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+    {
+      "id": "comment-uuid-1",
+      "text": "Great feature idea!",
+      "topicId": "topic-uuid-123",
+      "creatorId": "sub-uuid-1",
+      "parentId": null,
+      "source": "widget",
+      "createdAt": "2024-01-17T16:30:00Z",
+      "subscriber": {
+        "id": "sub-uuid-1",
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "replies": [
+        {
+          "id": "comment-uuid-2",
+          "text": "I agree!",
+          "parentId": "comment-uuid-1",
+          "createdAt": "2024-01-17T17:00:00Z",
+          "subscriber": {
+            "id": "sub-uuid-2",
+            "name": "Jane Smith",
+            "email": "jane@example.com"
+          }
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "offset": 0,
+    "limit": 50
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Hierarchical**: Returns top-level comments with nested replies
+- **Team-Wide**: If no topic ID provided, returns comments from all team topics
+- **Includes Topic**: When listing all comments, includes topic details for context
+
+## Use Cases
+
+- **Topic Discussion**: Display all comments on a topic
+- **Zapier Integration**: Fetch all new topic comments across roadmap
+- **Activity Feed**: Show recent topic activity
+
+## Notes
+
+- Without topic ID, fetches from all team topics (useful for Zapier)
+- Returns empty array if topic has no comments
+- Deleted subscribers still shown in comment history

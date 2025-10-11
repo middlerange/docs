@@ -1,0 +1,116 @@
+---
+title: "Get Feedback Vote Info"
+api: "POST /v1/public/feedback-votes.info"
+description: "Get vote count and check if current user has voted on a feedback item."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+For checking user's vote status, use subscriber JWT token:
+```bash
+Authorization: Bearer SUBSCRIBER_JWT_TOKEN
+```
+
+## Request Body
+
+<ParamField body="feedbackId" type="string" required>
+  The feedback ID to get vote information for
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  Vote information
+  <Expandable title="properties">
+    <ResponseField name="count" type="number">
+      Total number of votes on this feedback
+    </ResponseField>
+    <ResponseField name="feedbackId" type="string">
+      The feedback ID
+    </ResponseField>
+    <ResponseField name="hasVoted" type="boolean">
+      Whether current subscriber has voted (null if not authenticated)
+    </ResponseField>
+    <ResponseField name="voteId" type="string">
+      Current user's vote ID if they have voted
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/feedback-votes.info' \
+--header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "feedbackId": "feedback-uuid"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/feedback-votes.info', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    feedbackId: 'feedback-uuid'
+  })
+});
+
+const { data } = await response.json();
+console.log(`Votes: ${data.count}, Has voted: ${data.hasVoted}`);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/feedback-votes.info',
+    headers={
+        'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'feedbackId': 'feedback-uuid'
+    }
+)
+
+data = response.json()['data']
+print(f"Votes: {data['count']}, Has voted: {data['hasVoted']}")
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "count": 42,
+    "feedbackId": "feedback-uuid",
+    "hasVoted": true,
+    "voteId": "vote-uuid"
+  }
+}
+```
+
+</ResponseExample>
+
+## Use Cases
+
+- **Display Vote Count**: Show number of votes on feedback
+- **Vote Button State**: Determine if vote button should be active/inactive
+- **User Engagement**: Track which feedback user has voted on
+
+## Notes
+
+- `hasVoted` and `voteId` only populated with subscriber authentication
+- Vote count always returned regardless of authentication
+- One vote per subscriber per feedback

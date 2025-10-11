@@ -1,0 +1,165 @@
+---
+title: "List Topics"
+api: "POST /v1/public/topics.list"
+description: "Get all published topics (feature requests) for a specific roadmap stage. Supports sorting and pagination."
+---
+
+## Authentication
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Request Body
+
+<ParamField body="roadmapId" type="string" required>
+  Roadmap ID (UUID)
+</ParamField>
+
+<ParamField body="stageId" type="string" required>
+  Stage ID (UUID) to filter topics by
+</ParamField>
+
+<ParamField body="sort" type="string" default="createdAt">
+  Field to sort by (createdAt, updatedAt, title)
+</ParamField>
+
+<ParamField body="direction" type="string" default="DESC">
+  Sort direction (ASC or DESC)
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of topic objects
+  <Expandable title="Topic Object">
+    <ResponseField name="id" type="string">Topic ID (UUID)</ResponseField>
+    <ResponseField name="urlId" type="string">Short URL identifier</ResponseField>
+    <ResponseField name="url" type="string">URL path</ResponseField>
+    <ResponseField name="title" type="string">Topic title</ResponseField>
+    <ResponseField name="description" type="string">Short description</ResponseField>
+    <ResponseField name="text" type="string">Full topic text</ResponseField>
+    <ResponseField name="publishedAt" type="string">Publication timestamp</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">Last update timestamp</ResponseField>
+    <ResponseField name="roadmapId" type="string">Roadmap ID</ResponseField>
+    <ResponseField name="stageId" type="string">Stage ID</ResponseField>
+    <ResponseField name="subscriberId" type="string">Creator subscriber ID</ResponseField>
+    <ResponseField name="voteCount" type="number">Number of votes</ResponseField>
+    <ResponseField name="commentCount" type="number">Number of comments</ResponseField>
+    <ResponseField name="meta" type="object">Custom metadata</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Pagination metadata
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location --request POST 'https://api.yourapp.com/v1/public/topics.list' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "roadmapId": "roadmap-uuid-123",
+  "stageId": "stage-uuid-456",
+  "sort": "createdAt",
+  "direction": "DESC"
+}'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.yourapp.com/v1/public/topics.list', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    roadmapId: 'roadmap-uuid-123',
+    stageId: 'stage-uuid-456',
+    sort: 'createdAt',
+    direction: 'DESC'
+  })
+});
+
+const { data: topics, pagination } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.yourapp.com/v1/public/topics.list',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'roadmapId': 'roadmap-uuid-123',
+        'stageId': 'stage-uuid-456',
+        'sort': 'createdAt',
+        'direction': 'DESC'
+    }
+)
+
+topics = response.json()['data']
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+    {
+      "id": "topic-uuid-1",
+      "urlId": "abc123",
+      "url": "/add-mobile-app-abc123",
+      "title": "Add mobile app",
+      "description": "We need a mobile app",
+      "text": "It would be great to have native mobile apps for iOS and Android.",
+      "publishedAt": "2024-01-15T10:30:00Z",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-16T14:20:00Z",
+      "roadmapId": "roadmap-uuid-123",
+      "stageId": "stage-uuid-456",
+      "subscriberId": "sub-uuid-789",
+      "voteCount": 156,
+      "commentCount": 23,
+      "meta": {
+        "ctaTitle": "Vote for this feature",
+        "projectId": "project-uuid"
+      }
+    }
+  ],
+  "pagination": {
+    "offset": 0,
+    "limit": 50
+  }
+}
+```
+
+</ResponseExample>
+
+## Behavior
+
+- **Published Only**: Only returns topics with `publishedAt` set (not null)
+- **Stage Filtering**: Topics filtered by specific roadmap stage
+- **Sorted**: Returns topics sorted by specified field
+- **Pagination**: Supports offset/limit pagination
+
+## Use Cases
+
+- **Roadmap Display**: Show feature requests by stage
+- **Public Roadmap**: Display planned features to users
+- **Feature Voting**: List features for users to vote on
+
+## Notes
+
+- Both `roadmapId` and `stageId` are required
+- Only published topics are returned (draft topics excluded)
+- Topics include vote and comment counts
+- Stage must belong to the specified roadmap
