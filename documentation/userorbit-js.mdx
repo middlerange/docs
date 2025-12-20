@@ -45,8 +45,26 @@ import userorbit from "userorbit-js";
 
 userorbit.init({
   accountId: "<account-id>", // required
-  apiHost: "<your-api-host>", // required
+  apiHost: "<your-api-host>", // optional, defaults to "https://api.userorbit.com"
   userId: "<user-id>", // optional
+  email: "<user-email>", // optional
+  name: "<user-name>", // optional
+  attributes: { // optional
+    plan: "paid",
+    role: "admin"
+  },
+  theme: "light" | "dark", // optional
+  widget: { // optional
+    theme: "light" | "dark"
+  },
+  analytics: { // optional
+    enabled: true
+  },
+  floatingWidget: true, // optional
+  widgetMountSelector: "<css-selector>", // optional
+  errorHandler: (error) => { // optional
+    console.error("Userorbit error:", error);
+  }
 });
 ```
 
@@ -56,10 +74,10 @@ Userorbit JS is a client SDK meant to be run client-side in their browser so mak
 
 
 ```js
-if (window !== undefined) {
+if (typeof window !== "undefined") {
   userorbit.init({
     accountId: "<account-id>",
-    apiHost: "<your-api-host>",
+    apiHost: "<your-api-host>", // optional
     userId: "<user-id>", //optional
   });
 } else {
@@ -73,20 +91,31 @@ if (window !== undefined) {
 
 Set custom attributes for the identified user to help segment them based on specific attribues.
 
-
-
 ```js
 userorbit.setAttribute("plan", "paid");
 ```
 
 
+### Set Email
+
+Update the email address of the currently identified user.
+
+```js
+userorbit.setEmail("user@example.com");
+```
+
+
 ### Track Action
 
-Track user actions to trigger tours based on user interactions, such as button clicks or scrolling:
+Track user actions to trigger tours based on user interactions, such as button clicks or scrolling. You can also pass optional properties like `hiddenFields`.
 
 
 ```js
-userorbit.track("Clicked on Plans");
+userorbit.track("Clicked on Plans", {
+  hiddenFields: {
+    source: "header"
+  }
+});
 ```
 
 
@@ -128,6 +157,91 @@ userorbit.registerRouteChange();
   {" "}
   Refer to the [Framework Guides](/documentation/framework-guides) for more information.
 </Note>
+
+
+### Update Theme
+
+Change the widget theme dynamically between light and dark mode.
+
+```js
+userorbit.updateTheme("dark");
+```
+
+
+### Open Widget
+
+Programmatically open the Userorbit widget. You can optionally specify which tab to open or target a specific item.
+
+```js
+userorbit.openWidget({
+  tab: "feedback", // "feedback" | "roadmap" | "updates" | "help"
+  showFeedbackForm: true
+});
+```
+
+#### OpenWidgetOptions
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `tab` | `string` | The tab to open: `"feedback"`, `"roadmap"`, `"updates"`, or `"help"`. |
+| `announcementId` | `string` | Open a specific announcement. |
+| `roadmapId` | `string` | Open a specific roadmap. |
+| `topicId` | `string` | Open a specific topic. |
+| `articleId` | `string` | Open a specific help article. |
+| `showFeedbackForm` | `boolean` | Whether to directly show the feedback submission form. |
+| `modal` | `boolean` | Whether to open as a modal. |
+| `compact` | `boolean` | Whether to use a compact layout. |
+| `position` | `string` | Position of the widget: `"bottom-right"`, `"bottom-left"`, or `"top-right"`. |
+
+
+### Start Survey
+
+Programmatically trigger a survey by its ID.
+
+```js
+userorbit.startSurvey("survey-id");
+```
+
+
+### Start Tour
+
+Programmatically trigger a tour by its ID.
+
+```js
+userorbit.startTour("tour-id");
+```
+
+
+### Start Checklist
+
+Programmatically trigger a checklist by its ID.
+
+```js
+userorbit.startChecklist("checklist-id");
+```
+
+
+### Get API
+
+Retrieve the underlying API client for making custom calls to Userorbit.
+
+```js
+const api = userorbit.getApi();
+const response = await api("/some-endpoint", { data: "..." });
+```
+
+
+### Trigger Survey
+
+Manually trigger a survey with a full survey object. This is typically used for previews.
+
+```js
+userorbit.triggerSurvey({
+  survey: surveyData,
+  account: "account-id",
+  // ... other SurveyPreviewProps
+});
+```
 
 
 
@@ -178,5 +292,21 @@ If you see this error in the console, it means that the Userorbit JS package is 
 1. Update to the latest version of the JS Package.
 2. Verify this wherever you call initialise the Userorbit instance in your code.
 3. It should now start working.
+
+---
+
+### Multi-page tours not working in SPAs (Next.js, etc.)
+
+A common issue in Single Page Applications (SPAs) and hybrid frameworks like Next.js is that multi-page product tours may not automatically progress when the route changes. This occurs because these frameworks use internal routing that might not register with Userorbit's default listeners.
+
+**How to fix:**
+
+To fix this, you must manually call `userorbit.registerRouteChange()` whenever your application's route changes. This ensures Userorbit is aware of the new path and can trigger the appropriate tour steps.
+
+```javascript
+userorbit.registerRouteChange();
+```
+
+Refer to the [Framework Guides](/documentation/framework-guides) for specific implementation examples for Next.js, React, and Vue.
 
 ---

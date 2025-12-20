@@ -46,7 +46,16 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["userorbit", "how-does-it-work"]
+      "pages": ["userorbit", "how-does-it-work", "using-userorbit", "development"]
+    },
+    {
+      "group": "Documentation",
+      "pages": [
+        "documentation/framework-guides",
+        "documentation/quickstart",
+        "documentation/userorbit-js",
+        "documentation/userorbit-react-native"
+      ]
     },
     {
       "group": "API Reference",

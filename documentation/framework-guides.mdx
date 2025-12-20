@@ -58,6 +58,20 @@ Before getting started, make sure you have:
 
 ---
 
+## Handling Route Changes in SPAs
+
+Single Page Applications (SPAs) and hybrid frameworks like Next.js often use internal routing that doesn't trigger standard browser page loads. This can prevent Userorbit from detecting route changes, which is required for multi-page product tours to work correctly.
+
+If you encounter issues where tours do not progress across different pages, you must manually register route changes using:
+
+```javascript
+userorbit.registerRouteChange();
+```
+
+The guides below include specific examples of how to integrate this into your framework's routing system.
+
+---
+
 ## HTML
 
 All you need to do is copy a `<script>` tag to your HTML head, and that’s about it!
