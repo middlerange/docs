@@ -57,7 +57,7 @@ Authorization: Bearer YOUR_API_KEY
 <RequestExample>
 
 ```bash cURL
-curl --location --request POST 'https://api.yourapp.com/v1/public/subscriber.create' \
+curl --location --request POST 'https://api.userorbit.com/v1/public/subscriber.create' \
 --header 'Authorization: Bearer YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -68,7 +68,7 @@ curl --location --request POST 'https://api.yourapp.com/v1/public/subscriber.cre
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.yourapp.com/v1/public/subscriber.create', {
+const response = await fetch('https://api.userorbit.com/v1/public/subscriber.create', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -88,7 +88,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.yourapp.com/v1/public/subscriber.create',
+    'https://api.userorbit.com/v1/public/subscriber.create',
     headers={
         'Authorization': 'Bearer YOUR_API_KEY',
         'Content-Type': 'application/json'

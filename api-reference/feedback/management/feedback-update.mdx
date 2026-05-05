@@ -47,7 +47,7 @@ Authorization: Bearer SUBSCRIBER_JWT_TOKEN
 <RequestExample>
 
 ```bash cURL
-curl --location --request POST 'https://api.yourapp.com/v1/public/feedbacks.update' \
+curl --location --request POST 'https://api.userorbit.com/v1/public/feedbacks.update' \
 --header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -58,7 +58,7 @@ curl --location --request POST 'https://api.yourapp.com/v1/public/feedbacks.upda
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.yourapp.com/v1/public/feedbacks.update', {
+const response = await fetch('https://api.userorbit.com/v1/public/feedbacks.update', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
@@ -78,7 +78,7 @@ const { data: feedback } = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.yourapp.com/v1/public/feedbacks.update',
+    'https://api.userorbit.com/v1/public/feedbacks.update',
     headers={
         'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
         'Content-Type': 'application/json'

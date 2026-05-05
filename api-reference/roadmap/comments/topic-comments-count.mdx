@@ -29,7 +29,7 @@ Authorization: Bearer SUBSCRIBER_JWT_TOKEN
 <RequestExample>
 
 ```bash cURL
-curl --location --request POST 'https://api.yourapp.com/v1/public/topic-comments.count' \
+curl --location --request POST 'https://api.userorbit.com/v1/public/topic-comments.count' \
 --header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -38,7 +38,7 @@ curl --location --request POST 'https://api.yourapp.com/v1/public/topic-comments
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.yourapp.com/v1/public/topic-comments.count', {
+const response = await fetch('https://api.userorbit.com/v1/public/topic-comments.count', {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${subscriberToken}`,

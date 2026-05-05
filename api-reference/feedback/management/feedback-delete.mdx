@@ -31,7 +31,7 @@ Authorization: Bearer SUBSCRIBER_JWT_TOKEN
 <RequestExample>
 
 ```bash cURL
-curl --location --request POST 'https://api.yourapp.com/v1/public/feedbacks.delete' \
+curl --location --request POST 'https://api.userorbit.com/v1/public/feedbacks.delete' \
 --header 'Authorization: Bearer SUBSCRIBER_JWT_TOKEN' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -40,7 +40,7 @@ curl --location --request POST 'https://api.yourapp.com/v1/public/feedbacks.dele
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.yourapp.com/v1/public/feedbacks.delete', {
+const response = await fetch('https://api.userorbit.com/v1/public/feedbacks.delete', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
@@ -59,7 +59,7 @@ console.log('Feedback deleted:', success);
 import requests
 
 response = requests.post(
-    'https://api.yourapp.com/v1/public/feedbacks.delete',
+    'https://api.userorbit.com/v1/public/feedbacks.delete',
     headers={
         'Authorization': 'Bearer SUBSCRIBER_JWT_TOKEN',
         'Content-Type': 'application/json'

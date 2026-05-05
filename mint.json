@@ -46,15 +46,14 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["userorbit", "how-does-it-work", "using-userorbit", "development"]
+      "pages": ["userorbit", "how-does-it-work", "development"]
     },
     {
       "group": "Documentation",
       "pages": [
         "documentation/framework-guides",
         "documentation/quickstart",
-        "documentation/userorbit-js",
-        "documentation/userorbit-react-native"
+        "documentation/userorbit-js"
       ]
     },
     {

@@ -31,13 +31,13 @@ No request body required.
 <RequestExample>
 
 ```bash cURL
-curl --location --request POST 'https://api.yourapp.com/v1/public/roadmap.list' \
+curl --location --request POST 'https://api.userorbit.com/v1/public/roadmap.list' \
 --header 'Authorization: Bearer YOUR_API_KEY' \
 --header 'Content-Type: application/json'
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.yourapp.com/v1/public/roadmap.list', {
+const response = await fetch('https://api.userorbit.com/v1/public/roadmap.list', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -52,7 +52,7 @@ const { data: roadmap } = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.yourapp.com/v1/public/roadmap.list',
+    'https://api.userorbit.com/v1/public/roadmap.list',
     headers={
         'Authorization': 'Bearer YOUR_API_KEY',
         'Content-Type': 'application/json'
