@@ -52,7 +52,6 @@
       "group": "Documentation",
       "pages": [
         "documentation/framework-guides",
-        "documentation/quickstart",
         "documentation/userorbit-js"
       ]
     },
